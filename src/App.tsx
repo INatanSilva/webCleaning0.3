@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import './App.css';
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "./firebase";
 
 const initialState = {
   nome: '',
@@ -37,14 +39,8 @@ function App() {
         telefoneRef.current.style.borderColor = '#ef4444';
         telefoneRef.current.title = 'Número de telefone deve ter 9 dígitos';
       } else if (value.length === 9) {
-        const firstDigit = value[0];
-        if (firstDigit === '9' || firstDigit === '2') {
-          telefoneRef.current.style.borderColor = '#10b981';
-          telefoneRef.current.title = 'Número válido';
-        } else {
-          telefoneRef.current.style.borderColor = '#ef4444';
-          telefoneRef.current.title = 'Número deve começar com 2 (fixo) ou 9 (móvel)';
-        }
+        telefoneRef.current.style.borderColor = '#10b981';
+        telefoneRef.current.title = 'Número válido';
       }
     }
   };
@@ -57,21 +53,18 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      await addDoc(collection(db, "requests"), {
+        nome: form.nome,
+        numeroContato: form.numeroContato,
+        localizacao: form.localizacao,
+        tipoLimpeza: form.tipoLimpeza,
       });
       setLoading(false);
-      if (!response.ok) {
-        alert('Erro ao enviar solicitação.');
-      } else {
-        setForm(initialState);
-        setShowPopup(true);
-      }
+      setForm(initialState);
+      setShowPopup(true);
     } catch (err) {
       setLoading(false);
-      alert('Erro de conexão com o servidor.');
+      alert("Erro ao salvar no Firebase!");
     }
   };
 
@@ -160,4 +153,4 @@ function App() {
   );
 }
 
-export default App;
+export default App; 
