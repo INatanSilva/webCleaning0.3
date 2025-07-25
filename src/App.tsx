@@ -200,7 +200,7 @@ function App() {
               type="text"
               id="localizacao"
               name="localizacao"
-              placeholder="Ex: Lisboa, Porto..."
+              placeholder="Ex: Lisboa, Rua Augusta 100"
               value={form.localizacao}
               onChange={handleChange}
               required
